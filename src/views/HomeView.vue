@@ -1,25 +1,27 @@
 <template>
-  <div>
-    <h1>Home View</h1>
-    <p>Count: {{ count }}</p>
-    <button @click="increment">Increment</button>
+  <div class="home-view">
+    <TopBar />
+    <DataTable />
   </div>
 </template>
 
 <script>
-import { mapState, mapActions } from 'vuex'
+import TopBar from '@/components/TopBar.vue'
+import DataTable from '@/components/DataTable.vue'
 
 export default {
   name: 'HomeView',
-  computed: {
-    ...mapState(['count'])
-  },
-  methods: {
-    ...mapActions(['increment'])
+  components: {
+    TopBar,
+    DataTable,
   }
 }
 </script>
 
 <style scoped>
-/* Add styles here */
+.home-view {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+}
 </style>
