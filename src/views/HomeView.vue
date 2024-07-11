@@ -1,34 +1,58 @@
 <template>
   <div class="home-view">
     <TopBar />
-    <DataTable />
+    <DataTable :records="paginatedRecords" />
+    <div class="pagination-container">
+      <DataTablePagination
+        :currentPage="currentPage"
+        :totalPages="totalPages"
+        @updatePage="updatePage"
+      />
+    </div>
   </div>
 </template>
 
 <script>
-import { mapState, mapActions } from 'vuex'
+import { mapState } from 'vuex'
 import TopBar from '@/components/TopBar.vue'
 import DataTable from '@/components/DataTable.vue'
+import DataTablePagination from '@/components/DataTablePagination.vue'
 
 export default {
   name: 'HomeView',
   components: {
     TopBar,
     DataTable,
+    DataTablePagination,
+  },
+  data() {
+    return {
+      currentPage: 1,
+      recordsPerPage: 10,
+    };
   },
   computed: {
-    ...mapState(['count', 'appointments'])
+    ...mapState(['appointments']),
+    totalPages() {
+      return Math.ceil(this.appointments.length / this.recordsPerPage);
+    },
+    paginatedRecords() {
+      const start = (this.currentPage - 1) * this.recordsPerPage;
+      const end = start + this.recordsPerPage;
+      return this.appointments.slice(start, end);
+    }
   },
   methods: {
-    ...mapActions(['increment', 'fetchAppointments'])
+    updatePage(page) {
+      this.currentPage = page;
+    }
   },
   async created() {
     try {
-      console.log('Fetching appointments in HomeView...')
-      await this.fetchAppointments()
-      console.log('Fetched appointments:', this.appointments)
+      console.log('Fetching data in HomeView...');
+      await this.$store.dispatch('fetchAppointments');
     } catch (error) {
-      console.error('Error fetching data:', error)
+      console.error('Error fetching data:', error);
     }
   }
 }
@@ -39,5 +63,10 @@ export default {
   display: flex;
   flex-direction: column;
   height: 100vh;
+}
+
+.pagination-container {
+  margin-top: auto;
+  align-self: flex-end;
 }
 </style>
