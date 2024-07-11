@@ -1,21 +1,29 @@
-import axios from 'axios';
+import Airtable from 'airtable';
 
-const baseURL = `https://api.airtable.com/v0/${process.env.VUE_APP_AIRTABLE_BASE_ID}/${process.env.VUE_APP_AIRTABLE_TABLE_NAME}`;
-const apiKey = process.env.VUE_APP_AIRTABLE_API_KEY;
+const base = new Airtable({ apiKey: process.env.VUE_APP_AIRTABLE_API_KEY }).base(process.env.VUE_APP_AIRTABLE_BASE_ID);
 
-const airtable = axios.create({
-  baseURL,
-  headers: {
-    Authorization: `Bearer ${apiKey}`
-  }
-});
+export const fetchAllRecords = (table) => {
+  console.log('Fetching records from Airtable...');
+  let allRecords = [];
 
-export const fetchData = async () => {
-  try {
-    const response = await airtable.get();
-    return response.data.records;
-  } catch (error) {
-    console.error('Error fetching data from Airtable:', error);
-    throw error;
-  }
+  return new Promise((resolve, reject) => {
+    base(table)
+      .select({ view: 'Grid view' })
+      .eachPage(
+        (records, fetchNextPage) => {
+          console.log(`Fetched ${records.length} records`);
+          allRecords = [...allRecords, ...records];
+          fetchNextPage();
+        },
+        (err) => {
+          if (err) {
+            console.error('Error fetching records:', err);
+            reject(err);
+          } else {
+            console.log(`Total records fetched: ${allRecords.length}`);
+            resolve(allRecords);
+          }
+        }
+      );
+  });
 };

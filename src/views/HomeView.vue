@@ -9,7 +9,8 @@
 import { mapState, mapActions } from 'vuex'
 import TopBar from '@/components/TopBar.vue'
 import DataTable from '@/components/DataTable.vue'
-import { fetchData } from '@/services/airtable'
+import { fetchAllRecords } from '@/services/airtable'
+import CONSTANTS from '@/constants';
 
 export default {
   name: 'HomeView',
@@ -25,8 +26,9 @@ export default {
   },
   async created() {
     try {
-      const records = await fetchData();
-      console.log(records);
+      console.log('Fetching data in HomeView...', CONSTANTS.AT_TN_APPOINTMENTS);
+      const records = await fetchAllRecords(CONSTANTS.AT_TN_APPOINTMENTS);
+      console.log('Fetched records:', records);
     } catch (error) {
       console.error('Error fetching data:', error);
     }
