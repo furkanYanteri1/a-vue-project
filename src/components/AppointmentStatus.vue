@@ -8,7 +8,7 @@
           <span class="time-left">{{ timeLeft }}</span>
         </div>
         <v-spacer></v-spacer>
-        <font-awesome-icon icon="clock" class="clock-icon mx-2" />
+        <font-awesome-icon icon="clock" class="clock-icon ml-2 mr-4" />
         <span class="date-time">{{dateStr}}</span>
       </v-card>
     </div>
@@ -52,9 +52,9 @@ export default {
 
 .status-text {
   background-color: white;
-  padding: 12px 5px;
+  padding: 12px 8px;
   border-radius: 5px;
-  width: 60%;
+  width: 50%;
   font-weight: bold;
   font-size: 14px;
   display: flex;
@@ -83,6 +83,7 @@ export default {
 .time-left {
   flex: 1;
   text-align: right;
+  color: darkgray;
 }
 
 .date-time {
