@@ -3,52 +3,118 @@
     <div class="column">
       <div class="contact-info">
         <font-awesome-icon class="info-icon" :icon="['fas', 'user']" />
-        {{ (record.fields.contact_name?.[0] || '') + ' ' + (record.fields.contact_surname?.[0] || '') }}
+        {{
+          (record.fields.contact_name?.[0] || "") +
+          " " +
+          (record.fields.contact_surname?.[0] || "")
+        }}
       </div>
       <div class="contact-info email">
         <font-awesome-icon class="info-icon" :icon="['fas', 'envelope']" />
-        {{ record.fields.contact_email?.[0] || '' }}
+        {{ record.fields.contact_email?.[0] || "" }}
       </div>
       <div class="contact-info email">
         <font-awesome-icon class="info-icon" :icon="['fas', 'phone']" />
-        {{ record.fields.contact_phone?.[0] || '' }}
+        {{ record.fields.contact_phone?.[0] || "" }}
       </div>
     </div>
     <div class="column">
       <div class="contact-info address">
         <font-awesome-icon class="info-icon" :icon="['fas', 'home']" />
-        {{ record.fields?.appointment_address || '' }}
+        {{ record.fields?.appointment_address || "" }}
       </div>
     </div>
-    <div class="column">Part 4</div>
+    <div class="column">
+      <appointment-status
+        :isCancelled="record.fields?.is_cancelled || false"
+        :timeLeft=getTimeDiff(record.fields?.appointment_date)
+        :dateStr=formatDate(record.fields?.appointment_date)
+      ></appointment-status>
+    </div>
+    <div class="column">
+      <div class="contact-info address">
+        <font-awesome-icon class="info-icon" :icon="['fas', 'home']" />
+        {{ record.fields?.appointment_address || "" }}
+      </div>
+    </div>
   </div>
 </template>
 
 <script>
-import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
-import { defineComponent } from 'vue'
-import { library } from '@fortawesome/fontawesome-svg-core'
-import { fas } from '@fortawesome/free-solid-svg-icons'
+import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
+import { defineComponent } from "vue";
+import { library } from "@fortawesome/fontawesome-svg-core";
+import { fas } from "@fortawesome/free-solid-svg-icons";
+import AppointmentStatus from "./AppointmentStatus.vue";
 
 // Add all icons from the solid icons library
-library.add(fas)
+library.add(fas);
 
 export default defineComponent({
-  name: 'AppointmentRecord',
+  name: "AppointmentRecord",
   components: {
-    // eslint-disable-next-line vue/no-unused-components
-    FontAwesomeIcon
+    FontAwesomeIcon,
+    AppointmentStatus,
   },
   props: {
     record: {
       type: Object,
-      required: true
-    }
+      required: true,
+    },
   },
-  created(){
-    console.log(this.record)
+  methods: {
+    getTimeDiff(appointmentDate) {
+    const now = new Date();
+    const appointmentTime = new Date(appointmentDate);
+
+    // if the date is earlier, return 'completed'
+    if (appointmentTime < now) {
+      return 'completed';
+    }
+
+    const diff = appointmentTime - now;
+
+    const msInMinute = 60 * 1000;
+    const msInHour = msInMinute * 60;
+    const msInDay = msInHour * 24;
+    const msInYear = msInDay * 365;
+
+    const years = Math.floor(diff / msInYear);
+    const days = Math.floor((diff % msInYear) / msInDay);
+    const hours = Math.floor((diff % msInDay) / msInHour);
+    const minutes = Math.floor((diff % msInHour) / msInMinute);
+
+    let timeString = '';
+
+    if (years > 0) {
+      timeString = `> ${years} year${years > 1 ? 's' : ''}`;
+    } else if (days > 0) {
+      timeString = `${days} day${days > 1 ? 's' : ''}`;
+    } else if (hours > 0) {
+      timeString = `${hours} hour${hours > 1 ? 's' : ''}`;
+    } else {
+      timeString = `${minutes} minute${minutes > 1 ? 's' : ''}`;
+    }
+
+    return timeString;
+  },
+  formatDate(dateStr){
+    const date = new Date(dateStr);
+
+    const day = String(date.getDate()).padStart(2, '0');
+    const month = String(date.getMonth() + 1).padStart(2, '0'); // Months are 0-indexed
+    const year = date.getFullYear();
+
+    const hours = String(date.getHours()).padStart(2, '0');
+    const minutes = String(date.getMinutes()).padStart(2, '0');
+
+    return `${day}/${month}/${year} ${hours}:${minutes}`;
   }
-})
+  },
+  created() {
+    console.log(this.record);
+  },
+});
 </script>
 
 <style scoped>
@@ -87,7 +153,7 @@ export default defineComponent({
   font-weight: bold;
 }
 
-.info-icon{
+.info-icon {
   font-size: 14px;
   color: gray;
   padding-right: 5%;
