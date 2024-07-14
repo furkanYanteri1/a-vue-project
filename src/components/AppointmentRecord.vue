@@ -24,7 +24,7 @@
         {{ record.fields?.appointment_address || "" }}
       </div>
     </div>
-    <div class="column">
+    <div class="column status">
       <appointment-status
         :isCancelled="record.fields?.is_cancelled || false"
         :timeLeft="getTimeDiff(record.fields?.appointment_date)"
@@ -142,16 +142,18 @@ export default defineComponent({
 .appointment-record {
   display: flex;
   border-bottom: 1px solid #ccc;
+  flex-wrap: wrap;
 }
 
 .column {
   flex: 1;
   border: 1px solid #000;
-  height: 70px;
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
-  justify-content: center; /* Align items to the start (top) */
+  justify-content: center;
+  padding: 10px; 
+  min-width: 0; /* prevent content overflow when shrinked */
 }
 
 .contact-info {
@@ -160,18 +162,26 @@ export default defineComponent({
   display: flex;
   align-items: center; /* Align items to the center vertically */
   justify-content: flex-start; /* Align items to the start (left) */
-  padding-left: 20%;
+  padding-left: 20px;
   color: rgb(61, 61, 61);
 }
+
 .avatars {
+  display: flex;
+  align-items: center;
   justify-content: center;
-  padding: 0px;
+}
+
+.status {
+  flex: 1;
+  min-width: 30%; /* Status should remain the biggest for small screens */
 }
 
 .email {
   font-size: 10px;
   color: gray;
 }
+
 .address {
   font-size: 10px;
   color: rgb(61, 61, 61);
@@ -181,6 +191,15 @@ export default defineComponent({
 .info-icon {
   font-size: 14px;
   color: gray;
-  padding-right: 5%;
+  padding-right: 5px;
+}
+
+@media (max-width: 700px) {
+  /* In smaller screens make the records listed 1 bu 1 vertically */
+  .column {
+    flex-basis: 100%;
+    max-width: 100%;
+  }
 }
 </style>
+
