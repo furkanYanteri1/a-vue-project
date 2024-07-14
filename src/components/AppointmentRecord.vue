@@ -32,7 +32,9 @@
       ></appointment-status>
     </div>
     <div class="column">
-      <AgentAvatars :avatars="getAvatarInfos()" />
+      <div class="contact-info avatars">
+        <AgentAvatars :avatars="getAvatarInfos()" />
+      </div>
     </div>
   </div>
 </template>
@@ -160,6 +162,10 @@ export default defineComponent({
   justify-content: flex-start; /* Align items to the start (left) */
   padding-left: 20%;
   color: rgb(61, 61, 61);
+}
+.avatars {
+  justify-content: center;
+  padding: 0px;
 }
 
 .email {
