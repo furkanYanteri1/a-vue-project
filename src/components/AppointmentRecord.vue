@@ -27,15 +27,12 @@
     <div class="column">
       <appointment-status
         :isCancelled="record.fields?.is_cancelled || false"
-        :timeLeft=getTimeDiff(record.fields?.appointment_date)
-        :dateStr=formatDate(record.fields?.appointment_date)
+        :timeLeft="getTimeDiff(record.fields?.appointment_date)"
+        :dateStr="formatDate(record.fields?.appointment_date)"
       ></appointment-status>
     </div>
     <div class="column">
-      <div class="contact-info address">
-        <font-awesome-icon class="info-icon" :icon="['fas', 'home']" />
-        {{ record.fields?.appointment_address || "" }}
-      </div>
+      <AgentAvatars :avatars="getAvatarInfos()" />
     </div>
   </div>
 </template>
@@ -46,6 +43,8 @@ import { defineComponent } from "vue";
 import { library } from "@fortawesome/fontawesome-svg-core";
 import { fas } from "@fortawesome/free-solid-svg-icons";
 import AppointmentStatus from "./AppointmentStatus.vue";
+import AgentAvatars from "./AgentAvatars.vue";
+import { mapGetters } from 'vuex'
 
 // Add all icons from the solid icons library
 library.add(fas);
@@ -55,6 +54,7 @@ export default defineComponent({
   components: {
     FontAwesomeIcon,
     AppointmentStatus,
+    AgentAvatars,
   },
   props: {
     record: {
@@ -62,57 +62,76 @@ export default defineComponent({
       required: true,
     },
   },
+  data() {
+    return {
+    };
+  },
+  computed: {
+    ...mapGetters(['agentColor']), // Ensure agentColor getter is mapped
+  },
   methods: {
     getTimeDiff(appointmentDate) {
-    const now = new Date();
-    const appointmentTime = new Date(appointmentDate);
+      const now = new Date();
+      const appointmentTime = new Date(appointmentDate);
 
-    // if the date is earlier, return 'completed'
-    if (appointmentTime < now) {
-      return 'completed';
+      // if the date is earlier, return 'completed'
+      if (appointmentTime < now) {
+        return 'completed';
+      }
+
+      const diff = appointmentTime - now;
+
+      const msInMinute = 60 * 1000;
+      const msInHour = msInMinute * 60;
+      const msInDay = msInHour * 24;
+      const msInYear = msInDay * 365;
+
+      const years = Math.floor(diff / msInYear);
+      const days = Math.floor((diff % msInYear) / msInDay);
+      const hours = Math.floor((diff % msInDay) / msInHour);
+      const minutes = Math.floor((diff % msInHour) / msInMinute);
+
+      let timeString = '';
+
+      if (years > 0) {
+        timeString = `> ${years} year${years > 1 ? 's' : ''}`;
+      } else if (days > 0) {
+        timeString = `${days} day${days > 1 ? 's' : ''}`;
+      } else if (hours > 0) {
+        timeString = `${hours} hour${hours > 1 ? 's' : ''}`;
+      } else {
+        timeString = `${minutes} minute${minutes > 1 ? 's' : ''}`;
+      }
+
+      return timeString;
+    },
+    formatDate(dateStr){
+      const date = new Date(dateStr);
+
+      const day = String(date.getDate()).padStart(2, '0');
+      const month = String(date.getMonth() + 1).padStart(2, '0'); // Months are 0-indexed
+      const year = date.getFullYear();
+
+      const hours = String(date.getHours()).padStart(2, '0');
+      const minutes = String(date.getMinutes()).padStart(2, '0');
+
+      return `${day}/${month}/${year} ${hours}:${minutes}`;
+    },
+    getAvatarInfos(){
+      var infos = []
+      this.record.fields?.agent_id.forEach((id,index) => {
+        let pair={}
+        // pair.shortName = `${this.record.fields.agent_name[index][0]}`;
+        pair.shortName = `${this.record.fields.agent_name[index][0]}${this.record.fields.agent_surname[index][0]}`;
+        pair.color = this.agentColor(this.record.fields?.agent_id[index]|| '')
+        infos.push(pair)
+      });
+      console.log('INFOS', infos);
+      return infos
     }
-
-    const diff = appointmentTime - now;
-
-    const msInMinute = 60 * 1000;
-    const msInHour = msInMinute * 60;
-    const msInDay = msInHour * 24;
-    const msInYear = msInDay * 365;
-
-    const years = Math.floor(diff / msInYear);
-    const days = Math.floor((diff % msInYear) / msInDay);
-    const hours = Math.floor((diff % msInDay) / msInHour);
-    const minutes = Math.floor((diff % msInHour) / msInMinute);
-
-    let timeString = '';
-
-    if (years > 0) {
-      timeString = `> ${years} year${years > 1 ? 's' : ''}`;
-    } else if (days > 0) {
-      timeString = `${days} day${days > 1 ? 's' : ''}`;
-    } else if (hours > 0) {
-      timeString = `${hours} hour${hours > 1 ? 's' : ''}`;
-    } else {
-      timeString = `${minutes} minute${minutes > 1 ? 's' : ''}`;
-    }
-
-    return timeString;
-  },
-  formatDate(dateStr){
-    const date = new Date(dateStr);
-
-    const day = String(date.getDate()).padStart(2, '0');
-    const month = String(date.getMonth() + 1).padStart(2, '0'); // Months are 0-indexed
-    const year = date.getFullYear();
-
-    const hours = String(date.getHours()).padStart(2, '0');
-    const minutes = String(date.getMinutes()).padStart(2, '0');
-
-    return `${day}/${month}/${year} ${hours}:${minutes}`;
-  }
   },
   created() {
-    console.log(this.record);
+    // console.log(this.record);
   },
 });
 </script>

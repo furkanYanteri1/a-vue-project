@@ -5,7 +5,7 @@
 const CONSTANTS = 
 {
     AT_TN_APPOINTMENTS: 'Appointments',
-    // Add more constants here as needed
+    MAX_VISIBLE_AGENTS: 3,
 };  
 export default CONSTANTS;
   
