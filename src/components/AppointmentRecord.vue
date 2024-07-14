@@ -14,8 +14,12 @@
         {{ record.fields.contact_phone?.[0] || '' }}
       </div>
     </div>
-    <div class="column">Part 2</div>
-    <div class="column">Part 3</div>
+    <div class="column">
+      <div class="contact-info address">
+        <font-awesome-icon class="info-icon" :icon="['fas', 'home']" />
+        {{ record.fields?.appointment_address || '' }}
+      </div>
+    </div>
     <div class="column">Part 4</div>
   </div>
 </template>
@@ -70,11 +74,17 @@ export default defineComponent({
   align-items: center; /* Align items to the center vertically */
   justify-content: flex-start; /* Align items to the start (left) */
   padding-left: 20%;
+  color: rgb(61, 61, 61);
 }
 
 .email {
   font-size: 10px;
   color: gray;
+}
+.address {
+  font-size: 10px;
+  color: rgb(61, 61, 61);
+  font-weight: bold;
 }
 
 .info-icon{
