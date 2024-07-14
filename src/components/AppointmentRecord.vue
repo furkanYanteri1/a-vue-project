@@ -147,7 +147,6 @@ export default defineComponent({
 
 .column {
   flex: 1;
-  border: 1px solid #000;
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
@@ -199,6 +198,9 @@ export default defineComponent({
   .column {
     flex-basis: 100%;
     max-width: 100%;
+  }
+  .appointment-record{
+    border-bottom: 2px solid rgb(61, 61, 61);
   }
 }
 </style>
