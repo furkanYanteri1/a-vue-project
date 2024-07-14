@@ -5,7 +5,8 @@ import CONSTANTS from "@/constants";
 const store = createStore({
   state: {
     appointments: [],
-    agentColorMap: {}, // New state for agent color mapping
+    agentColorMap: {},
+    agentFilter: [],
     count: 0,
   },
   mutations: {
@@ -15,12 +16,15 @@ const store = createStore({
     setAgentColorMap(state, agentColorMap) {
       state.agentColorMap = agentColorMap;
     },
+    setAgentFilter(state, agentFilter) {
+      state.agentFilter = agentFilter;
+    },
     increment(state) {
       state.count++;
     },
   },
   actions: {
-    async fetchAppointments({ commit }) {
+    async fetchAppointments({ commit, getters }) {
       try {
         const records = await fetchAllRecords(CONSTANTS.AT_TN_APPOINTMENTS);
         commit("setAppointments", records);
@@ -28,6 +32,11 @@ const store = createStore({
         // Update agent color map after fetching appointments
         const agentColorMap = createAgentColorMap(records);
         commit("setAgentColorMap", agentColorMap);
+
+        // Create agent filter using getters directly
+        const agentFilters = createAgentFilter(records, getters);
+        commit("setAgentFilter", agentFilters);
+
       } catch (error) {
         console.error("Error fetching appointments:", error);
       }
@@ -40,9 +49,9 @@ const store = createStore({
     appointments: (state) => state.appointments,
     count: (state) => state.count,
     agentColor: (state) => (agentId) => {
-      console.log('worked');
       return state.agentColorMap[agentId] || "gray"; // just in case the map is missing that id
     },
+    agentFilter:(state) => state.agentFilter,
   },
 });
 
@@ -61,8 +70,26 @@ function createAgentColorMap(appointments) {
     });
   });
 
-  console.log("agentColorMap", agentColorMap);
   return agentColorMap;
+}
+
+// Function to create agent filter list
+function createAgentFilter(records, getters) {
+  let agentFilters = [];
+
+  records.forEach((record) => {
+    record.fields.agent_id?.forEach((agentId, index) => {
+      let agentFilter = {};
+      agentFilter.agentId = agentId;
+      agentFilter.color = getters.agentColor(agentId);
+      agentFilter.shortName = record.fields.agent_name[index][0]+record.fields.agent_surname[index][0]
+      if(agentFilters.some(item => item.agentId === agentId) === false){
+        agentFilters.push(agentFilter);
+      }
+    });
+  });
+
+  return agentFilters;
 }
 
 // Function to generate a random hexadecimal color
@@ -83,6 +110,5 @@ function getRandomColor() {
 
   return color;
 }
-
 
 export default store;
