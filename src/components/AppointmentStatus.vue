@@ -83,7 +83,7 @@ export default {
 .time-left {
   flex: 1;
   text-align: right;
-  color: darkgray;
+  color: rgb(61, 61, 61);
 }
 
 .date-time {
