@@ -25,7 +25,7 @@ const store = createStore({
       state.agentFilter = agentFilter;
     },
     filterAppointments(state){
-      state.filterAppointments = [...state.appointments]
+      state.filteredAppointments = [...state.appointments]
       //Filter by status
       switch (state.activeStatus) {
         case "Cancelled":
