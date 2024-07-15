@@ -32,14 +32,14 @@ export default {
     };
   },
   computed: {
-    ...mapState(['appointments']),
+    ...mapState(['filteredAppointments']),
     totalPages() {
-      return Math.ceil(this.appointments.length / this.recordsPerPage);
+      return Math.ceil(this.filteredAppointments.length / this.recordsPerPage);
     },
     paginatedRecords() {
       const start = (this.currentPage - 1) * this.recordsPerPage;
       const end = start + this.recordsPerPage;
-      return this.appointments.slice(start, end);
+      return this.filteredAppointments.slice(start, end);
     }
   },
   methods: {

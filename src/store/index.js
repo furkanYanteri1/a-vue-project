@@ -5,19 +5,38 @@ import CONSTANTS from "@/constants";
 const store = createStore({
   state: {
     appointments: [],
+    filteredAppointments: [],
     agentColorMap: {},
     agentFilter: [],
+    activeStatus: 'All Statuses',
     count: 0,
   },
   mutations: {
     setAppointments(state, appointments) {
       state.appointments = appointments;
+      state.filteredAppointments = appointments
     },
     setAgentColorMap(state, agentColorMap) {
       state.agentColorMap = agentColorMap;
     },
     setAgentFilter(state, agentFilter) {
       state.agentFilter = agentFilter;
+    },
+    changeStatus(state, status){
+      state.activeStatus = status
+      switch (state.activeStatus) {
+        case 'Cancelled':
+          state.filteredAppointments = JSON.parse(JSON.stringify([...state.appointments])).filter(x=>x.fields?.is_cancelled == true)
+          break;
+        case 'Upcoming':
+          state.filteredAppointments = JSON.parse(JSON.stringify([...state.appointments])).filter(x=>getTimeDiff(x.fields?.appointment_date) !== 'completed' && x.fields?.is_cancelled !== true)
+          break;
+        case 'Completed':
+          state.filteredAppointments = JSON.parse(JSON.stringify([...state.appointments])).filter(x=>getTimeDiff(x.fields?.appointment_date) == 'completed' && x.fields?.is_cancelled !== true)
+          break;
+        default:
+          state.filteredAppointments = JSON.parse(JSON.stringify([...state.appointments]))
+      }
     },
     increment(state) {
       state.count++;
@@ -52,6 +71,7 @@ const store = createStore({
       return state.agentColorMap[agentId] || "gray"; // just in case the map is missing that id
     },
     agentFilter:(state) => state.agentFilter,
+    activeStatus:(state)=> state.activeStatus,
   },
 });
 
@@ -109,6 +129,42 @@ function getRandomColor() {
   }
 
   return color;
+}
+
+function getTimeDiff(appointmentDate) {
+  const now = new Date();
+  const appointmentTime = new Date(appointmentDate);
+
+  // if the date is earlier, return 'completed'
+  if (appointmentTime < now) {
+    return 'completed';
+  }
+
+  const diff = appointmentTime - now;
+
+  const msInMinute = 60 * 1000;
+  const msInHour = msInMinute * 60;
+  const msInDay = msInHour * 24;
+  const msInYear = msInDay * 365;
+
+  const years = Math.floor(diff / msInYear);
+  const days = Math.floor((diff % msInYear) / msInDay);
+  const hours = Math.floor((diff % msInDay) / msInHour);
+  const minutes = Math.floor((diff % msInHour) / msInMinute);
+
+  let timeString = '';
+
+  if (years > 0) {
+    timeString = `> ${years} year${years > 1 ? 's' : ''}`;
+  } else if (days > 0) {
+    timeString = `${days} day${days > 1 ? 's' : ''}`;
+  } else if (hours > 0) {
+    timeString = `${hours} hour${hours > 1 ? 's' : ''}`;
+  } else {
+    timeString = `${minutes} minute${minutes > 1 ? 's' : ''}`;
+  }
+
+  return timeString;
 }
 
 export default store;
