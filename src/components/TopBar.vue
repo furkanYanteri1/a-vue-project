@@ -3,8 +3,7 @@
     <AgentAvatars :avatars="agentFilter" />
     <StatusFilter />
     <DatePicker />
-    <h1>My Data Table</h1>
-    <!-- Add filters and other elements here -->
+    <SearchBar />
   </div>
 </template>
 
@@ -13,7 +12,7 @@ import AgentAvatars from "./AgentAvatars.vue";
 import { mapGetters } from 'vuex'
 import StatusFilter from './StatusFilter.vue'
 import DatePicker from "./DatePicker.vue";
-
+import SearchBar from "./SearchBar.vue"; // Import your SearchBar component
 
 export default {
   name: "TopBar",
@@ -21,6 +20,7 @@ export default {
     AgentAvatars,
     StatusFilter,
     DatePicker,
+    SearchBar, // Register the SearchBar component
   },
   computed: {
     ...mapGetters(['agentFilter']),
