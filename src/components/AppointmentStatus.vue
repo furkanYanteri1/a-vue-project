@@ -34,7 +34,7 @@ export default {
     }
   },
   created() {
-    console.log("STAT", this.isCompleted);
+    // console.log("STAT", this.isCompleted);
   },
 };
 </script>

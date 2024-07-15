@@ -8,13 +8,15 @@ const store = createStore({
     filteredAppointments: [],
     agentColorMap: {},
     agentFilter: [],
-    activeStatus: 'All Statuses',
+    activeStatus: "All Statuses",
     count: 0,
+    earliestDateFilter: "",
+    latestDateFilter: "",
   },
   mutations: {
     setAppointments(state, appointments) {
       state.appointments = appointments;
-      state.filteredAppointments = appointments
+      state.filteredAppointments = appointments;
     },
     setAgentColorMap(state, agentColorMap) {
       state.agentColorMap = agentColorMap;
@@ -22,21 +24,59 @@ const store = createStore({
     setAgentFilter(state, agentFilter) {
       state.agentFilter = agentFilter;
     },
-    changeStatus(state, status){
-      state.activeStatus = status
+    filterAppointments(state){
+      state.filterAppointments = [...state.appointments]
+      //Filter by status
       switch (state.activeStatus) {
-        case 'Cancelled':
-          state.filteredAppointments = JSON.parse(JSON.stringify([...state.appointments])).filter(x=>x.fields?.is_cancelled == true)
+        case "Cancelled":
+          state.filteredAppointments = JSON.parse(
+            JSON.stringify([...state.filteredAppointments])
+          ).filter((x) => x.fields?.is_cancelled == true);
           break;
-        case 'Upcoming':
-          state.filteredAppointments = JSON.parse(JSON.stringify([...state.appointments])).filter(x=>getTimeDiff(x.fields?.appointment_date) !== 'completed' && x.fields?.is_cancelled !== true)
+        case "Upcoming":
+          state.filteredAppointments = JSON.parse(
+            JSON.stringify([...state.filteredAppointments])
+          ).filter(
+            (x) =>
+              getTimeDiff(x.fields?.appointment_date) !== "completed" &&
+              x.fields?.is_cancelled !== true
+          );
           break;
-        case 'Completed':
-          state.filteredAppointments = JSON.parse(JSON.stringify([...state.appointments])).filter(x=>getTimeDiff(x.fields?.appointment_date) == 'completed' && x.fields?.is_cancelled !== true)
+        case "Completed":
+          state.filteredAppointments = JSON.parse(
+            JSON.stringify([...state.filteredAppointments])
+          ).filter(
+            (x) =>
+              getTimeDiff(x.fields?.appointment_date) == "completed" &&
+              x.fields?.is_cancelled !== true
+          );
           break;
         default:
-          state.filteredAppointments = JSON.parse(JSON.stringify([...state.appointments]))
+          state.filteredAppointments = JSON.parse(
+            JSON.stringify([...state.filteredAppointments])
+          );
       }
+      // Filter by date
+      state.filteredAppointments = JSON.parse(JSON.stringify([...state.filteredAppointments])).filter((x) =>
+        isAppointmentWithinRange(
+          state.earliestDateFilter,
+          state.latestDateFilter,
+          x
+        ) === true
+      )
+
+    },
+    changeStatus(state, status) {
+      state.activeStatus = status;
+      this.commit('filterAppointments')
+    },
+    setEarliestDate(state, earliestDate) {
+      state.earliestDateFilter = earliestDate;
+      this.commit('filterAppointments')
+    },
+    setLatestDate(state, latestDate) {
+      state.latestDateFilter = latestDate;
+      this.commit('filterAppointments')
     },
     increment(state) {
       state.count++;
@@ -55,7 +95,6 @@ const store = createStore({
         // Create agent filter using getters directly
         const agentFilters = createAgentFilter(records, getters);
         commit("setAgentFilter", agentFilters);
-
       } catch (error) {
         console.error("Error fetching appointments:", error);
       }
@@ -70,12 +109,13 @@ const store = createStore({
     agentColor: (state) => (agentId) => {
       return state.agentColorMap[agentId] || "gray"; // just in case the map is missing that id
     },
-    agentFilter:(state) => state.agentFilter,
-    activeStatus:(state)=> state.activeStatus,
+    agentFilter: (state) => state.agentFilter,
+    activeStatus: (state) => state.activeStatus,
   },
 });
 
-// Helper function to create agent color mapping with unique colors
+// HELPER FUNCTIONS---------------------------------------------------------------
+// function to create [random unique color]-[agent] pairs
 function createAgentColorMap(appointments) {
   const agentColorMap = {};
 
@@ -102,8 +142,10 @@ function createAgentFilter(records, getters) {
       let agentFilter = {};
       agentFilter.agentId = agentId;
       agentFilter.color = getters.agentColor(agentId);
-      agentFilter.shortName = record.fields.agent_name[index][0]+record.fields.agent_surname[index][0]
-      if(agentFilters.some(item => item.agentId === agentId) === false){
+      agentFilter.shortName =
+        record.fields.agent_name[index][0] +
+        record.fields.agent_surname[index][0];
+      if (agentFilters.some((item) => item.agentId === agentId) === false) {
         agentFilters.push(agentFilter);
       }
     });
@@ -125,7 +167,8 @@ function getRandomColor() {
       color += letters[Math.floor(Math.random() * 16)];
     }
     // Check if the color is not a shade of gray
-    isGray = /^#(?:[0-9a-fA-F]{3}){1,2}$/.test(color) && color.match(/^#(.)\1{2}/);
+    isGray =
+      /^#(?:[0-9a-fA-F]{3}){1,2}$/.test(color) && color.match(/^#(.)\1{2}/);
   }
 
   return color;
@@ -137,7 +180,7 @@ function getTimeDiff(appointmentDate) {
 
   // if the date is earlier, return 'completed'
   if (appointmentTime < now) {
-    return 'completed';
+    return "completed";
   }
 
   const diff = appointmentTime - now;
@@ -152,19 +195,46 @@ function getTimeDiff(appointmentDate) {
   const hours = Math.floor((diff % msInDay) / msInHour);
   const minutes = Math.floor((diff % msInHour) / msInMinute);
 
-  let timeString = '';
+  let timeString = "";
 
   if (years > 0) {
-    timeString = `> ${years} year${years > 1 ? 's' : ''}`;
+    timeString = `> ${years} year${years > 1 ? "s" : ""}`;
   } else if (days > 0) {
-    timeString = `${days} day${days > 1 ? 's' : ''}`;
+    timeString = `${days} day${days > 1 ? "s" : ""}`;
   } else if (hours > 0) {
-    timeString = `${hours} hour${hours > 1 ? 's' : ''}`;
+    timeString = `${hours} hour${hours > 1 ? "s" : ""}`;
   } else {
-    timeString = `${minutes} minute${minutes > 1 ? 's' : ''}`;
+    timeString = `${minutes} minute${minutes > 1 ? "s" : ""}`;
   }
 
   return timeString;
 }
+function parseDate(dateString) {
+  const [day, month, year] = dateString.split("/").map(Number);
+  return new Date(year, month - 1, day);
+}
+
+function isAppointmentWithinRange(earliestDate, latestDate, appointment) {
+  const appointmentDate = new Date(appointment.fields.appointment_date);
+
+  // If earliestDate is provided, parse it and compare
+  if (earliestDate) {
+    const earliest = parseDate(earliestDate);
+    if (appointmentDate < earliest) {
+      return false;
+    }
+  }
+
+  // If latestDate is provided, parse it and compare
+  if (latestDate) {
+    const latest = parseDate(latestDate);
+    if (appointmentDate > latest) {
+      return false;
+    }
+  }
+
+  return true;
+}
+
 
 export default store;
