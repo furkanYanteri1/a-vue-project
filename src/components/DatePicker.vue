@@ -1,21 +1,23 @@
 <template>
     <div class="dropdown-container">
-      <div class="custom-select-wrapper">
+      <div :class="['custom-select-wrapper', { 'active-date': earliestDate }]">
         <select v-model="earliestDate" @click="openEarliestDatePicker">
           <option disabled value="">Earliest Date</option>
           <option :value="earliestDate" v-if="earliestDate">{{ earliestDate }}</option>
         </select>
-        <div class="custom-icon" @click="openEarliestDatePicker">
-          <font-awesome-icon icon="calendar-alt" />
+        <div class="custom-icons">
+          <font-awesome-icon :class="{ 'active-icon': earliestDate }" icon="calendar-alt" @click="openEarliestDatePicker" />
+          <font-awesome-icon icon="times" @click="clearEarliestDate" v-if="earliestDate" />
         </div>
       </div>
-      <div class="custom-select-wrapper">
+      <div :class="['custom-select-wrapper', { 'active-date': latestDate }]">
         <select v-model="latestDate" @click="openLatestDatePicker">
           <option disabled value="">Latest Date</option>
           <option :value="latestDate" v-if="latestDate">{{ latestDate }}</option>
         </select>
-        <div class="custom-icon" @click="openLatestDatePicker">
-          <font-awesome-icon icon="calendar-alt" />
+        <div class="custom-icons">
+          <font-awesome-icon :class="{ 'active-icon': latestDate }" icon="calendar-alt" @click="openLatestDatePicker" />
+          <font-awesome-icon icon="times" @click="clearLatestDate" v-if="latestDate" />
         </div>
       </div>
       
@@ -38,7 +40,11 @@
         <v-card>
           <v-card-title>Select the Latest Date</v-card-title>
           <v-card-text>
-            <v-date-picker v-model="selectedLatestDate" @update:modelValue="handleLatestDateSelect"></v-date-picker>
+            <v-date-picker 
+              v-model="selectedLatestDate" 
+              :min="earliestDate" 
+              @update:modelValue="handleLatestDateSelect"
+            ></v-date-picker>
           </v-card-text>
           <v-card-actions>
             <v-spacer></v-spacer>
@@ -82,11 +88,13 @@
         console.log("handleEarliestDateSelect called with date:", date);
         this.earliestDate = date.toLocaleDateString(); // Adjust formatting as needed
         console.log("Selected Earliest Date:", this.earliestDate);
+        this.closeEarliestDatePicker();
       },
       handleLatestDateSelect(date) {
         console.log("handleLatestDateSelect called with date:", date);
         this.latestDate = date.toLocaleDateString(); // Adjust formatting as needed
         console.log("Selected Latest Date:", this.latestDate);
+        this.closeLatestDatePicker();
       },
       closeEarliestDatePicker() {
         console.log("Closing Earliest Date Picker");
@@ -96,6 +104,16 @@
         console.log("Closing Latest Date Picker");
         this.showLatestDatePicker = false;
       },
+      clearEarliestDate() {
+        console.log("Clearing Earliest Date");
+        this.earliestDate = "";
+        this.selectedEarliestDate = null;
+      },
+      clearLatestDate() {
+        console.log("Clearing Latest Date");
+        this.latestDate = "";
+        this.selectedLatestDate = null;
+      }
     },
   });
   </script>
@@ -127,13 +145,27 @@
     font-weight: bold;
   }
   
-  .custom-icon {
+  .custom-icons {
     position: absolute;
     top: 50%;
     right: 10px;
     transform: translateY(-50%);
+    display: flex;
+    gap: 15px;
+    color: gray;
+  }
+  
+  .custom-icons .fa-icon {
     color: gray;
     cursor: pointer;
+  }
+  
+  .active-date select {
+    border-color:deepskyblue;
+  }
+  
+  .active-icon {
+    color:deepskyblue !important;
   }
   </style>
   
