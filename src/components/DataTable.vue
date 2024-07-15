@@ -40,6 +40,6 @@ export default {
 }
 
 .odd-row {
-  background-color: rgb(188, 188, 188);
+  background-color: rgb(218, 218, 218);
 }
 </style>
