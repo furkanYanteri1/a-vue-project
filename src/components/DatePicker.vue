@@ -3,11 +3,21 @@
       <div :class="['custom-select-wrapper', { 'active-date': earliestDate }]">
         <select v-model="earliestDate" @click="openEarliestDatePicker">
           <option disabled value="">Earliest Date</option>
-          <option :value="earliestDate" v-if="earliestDate">{{ earliestDate }}</option>
+          <option :value="earliestDate" v-if="earliestDate">
+            {{ earliestDate }}
+          </option>
         </select>
         <div class="custom-icons">
-          <font-awesome-icon :class="{ 'active-icon': earliestDate }" icon="calendar-alt" @click="openEarliestDatePicker" />
-          <font-awesome-icon icon="times" @click="clearEarliestDate" v-if="earliestDate" />
+          <font-awesome-icon
+            :class="{ 'active-icon': earliestDate }"
+            icon="calendar-alt"
+            @click="openEarliestDatePicker"
+          />
+          <font-awesome-icon
+            icon="times"
+            @click="clearEarliestDate"
+            v-if="earliestDate"
+          />
         </div>
       </div>
       <div :class="['custom-select-wrapper', { 'active-date': latestDate }]">
@@ -16,17 +26,30 @@
           <option :value="latestDate" v-if="latestDate">{{ latestDate }}</option>
         </select>
         <div class="custom-icons">
-          <font-awesome-icon :class="{ 'active-icon': latestDate }" icon="calendar-alt" @click="openLatestDatePicker" />
-          <font-awesome-icon icon="times" @click="clearLatestDate" v-if="latestDate" />
+          <font-awesome-icon
+            :class="{ 'active-icon': latestDate }"
+            icon="calendar-alt"
+            @click="openLatestDatePicker"
+          />
+          <font-awesome-icon
+            icon="times"
+            @click="clearLatestDate"
+            v-if="latestDate"
+          />
         </div>
       </div>
-      
+  
       <!-- Dialog for Earliest Date Picker -->
-      <v-dialog v-model="showEarliestDatePicker" persistent max-width="290">
+      <v-dialog v-model="showEarliestDatePicker" persistent max-width="380">
         <v-card>
           <v-card-title>Select the Earliest Date</v-card-title>
           <v-card-text>
-            <v-date-picker v-model="selectedEarliestDate" @update:modelValue="handleEarliestDateSelect"></v-date-picker>
+            <v-date-picker
+              v-model="selectedEarliestDate"
+              @update:modelValue="handleEarliestDateSelect"
+              :first-day-of-week="1"
+              :locale="'en-GB'"
+            ></v-date-picker>
           </v-card-text>
           <v-card-actions>
             <v-spacer></v-spacer>
@@ -40,10 +63,12 @@
         <v-card>
           <v-card-title>Select the Latest Date</v-card-title>
           <v-card-text>
-            <v-date-picker 
-              v-model="selectedLatestDate" 
-              :min="earliestDate" 
+            <v-date-picker
+              v-model="selectedLatestDate"
+              :min="earliestDate ? parseDate(earliestDate) : null"
               @update:modelValue="handleLatestDateSelect"
+              :first-day-of-week="1"
+              :locale="'en-GB'"
             ></v-date-picker>
           </v-card-text>
           <v-card-actions>
@@ -58,6 +83,7 @@
   <script>
   import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
   import { defineComponent } from "vue";
+  import { mapMutations } from "vuex";
   
   export default defineComponent({
     name: "DatePicker",
@@ -72,47 +98,51 @@
         selectedLatestDate: null,
         showEarliestDatePicker: false,
         showLatestDatePicker: false,
-        dateOptions: [], // Populate with your date options if needed
       };
     },
     methods: {
+      ...mapMutations(["setEarliestDate", "setLatestDate"]),
       openEarliestDatePicker() {
-        console.log("Opening Earliest Date Picker");
         this.showEarliestDatePicker = true;
       },
       openLatestDatePicker() {
-        console.log("Opening Latest Date Picker");
         this.showLatestDatePicker = true;
       },
       handleEarliestDateSelect(date) {
-        console.log("handleEarliestDateSelect called with date:", date);
-        this.earliestDate = date.toLocaleDateString(); // Adjust formatting as needed
-        console.log("Selected Earliest Date:", this.earliestDate);
+        this.earliestDate = this.formatDate(date);
+        this.setEarliestDate(this.earliestDate);
         this.closeEarliestDatePicker();
       },
       handleLatestDateSelect(date) {
-        console.log("handleLatestDateSelect called with date:", date);
-        this.latestDate = date.toLocaleDateString(); // Adjust formatting as needed
-        console.log("Selected Latest Date:", this.latestDate);
+        this.latestDate = this.formatDate(date);
+        this.setLatestDate(this.latestDate);
         this.closeLatestDatePicker();
       },
       closeEarliestDatePicker() {
-        console.log("Closing Earliest Date Picker");
         this.showEarliestDatePicker = false;
       },
       closeLatestDatePicker() {
-        console.log("Closing Latest Date Picker");
         this.showLatestDatePicker = false;
       },
       clearEarliestDate() {
-        console.log("Clearing Earliest Date");
         this.earliestDate = "";
         this.selectedEarliestDate = null;
+        this.setEarliestDate("");
       },
       clearLatestDate() {
-        console.log("Clearing Latest Date");
         this.latestDate = "";
         this.selectedLatestDate = null;
+        this.setLatestDate("");
+      },
+      formatDate(date) {
+        const day = String(date.getDate()).padStart(2, '0');
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const year = date.getFullYear();
+        return `${day}/${month}/${year}`;
+      },
+      parseDate(dateString) {
+        const [day, month, year] = dateString.split('/').map(Number);
+        return new Date(year, month - 1, day);
       }
     },
   });
@@ -161,11 +191,11 @@
   }
   
   .active-date select {
-    border-color:deepskyblue;
+    border-color: deepskyblue;
   }
   
   .active-icon {
-    color:deepskyblue !important;
+    color: deepskyblue !important;
   }
   </style>
   
