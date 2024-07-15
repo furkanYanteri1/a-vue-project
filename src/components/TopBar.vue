@@ -1,6 +1,7 @@
 <template>
   <div class="topbar">
     <AgentAvatars :avatars="agentFilter" />
+    <StatusFilter />
     <h1>My Data Table</h1>
     <!-- Add filters and other elements here -->
   </div>
@@ -9,12 +10,14 @@
 <script>
 import AgentAvatars from "./AgentAvatars.vue";
 import { mapGetters } from 'vuex'
+import StatusFilter from './StatusFilter.vue'
 
 
 export default {
   name: "TopBar",
   components: {
     AgentAvatars,
+    StatusFilter,
   },
   computed: {
     ...mapGetters(['agentFilter']),
@@ -28,7 +31,9 @@ export default {
   justify-content: space-between;
   align-items: center;
   padding: 1rem;
-  background-color: #2c3e50;
+  /* background-color: #2c3e50; */
+  background-color: rgb(230, 230, 230);
+  border: 1px solid rgb(68, 68, 68);
   color: white;
 }
 </style>
