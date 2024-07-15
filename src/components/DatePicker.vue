@@ -164,7 +164,7 @@
   
   select {
     width: 100%;
-    padding: 10px;
+    padding: 11px;
     appearance: none;
     -webkit-appearance: none;
     -moz-appearance: none;

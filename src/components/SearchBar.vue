@@ -39,19 +39,18 @@ export default {
   
   <style scoped>
 .search-bar {
-    width: 50%;
+  width: 100%;
   display: flex;
   align-items: center;
   font-size: 13px;
   font-weight: bold;
   margin-right: 0px;
   margin-left: 20px;
-
 }
 
 .search-bar input {
-    width: 90%;
-  padding: 8px;
+  width: 90%;
+  padding: 10px;
   margin-right: 0px;
   font-size: 13px;
   font-weight: bold;
@@ -60,10 +59,9 @@ export default {
   border-radius: 4px;
 }
 
-
 .custom-icon {
-    font-size: 13px;
-    font-weight: bold;
+  font-size: 13px;
+  font-weight: bold;
   color: gray;
 }
 </style>
