@@ -128,7 +128,7 @@ export default defineComponent({
         pair.color = this.agentColor(this.record.fields?.agent_id[index]|| '')
         infos.push(pair)
       });
-      console.log('INFOS', infos);
+      // console.log('INFOS', infos);
       return infos
     }
   },

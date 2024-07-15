@@ -34,7 +34,7 @@
       },
     },
     created(){
-      console.log('AVATARS', this.avatars);
+      // console.log('AVATARS', this.avatars);
     }
   };
   </script>
