@@ -33,7 +33,7 @@ export default {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 1rem;
+  padding: 2px;
   /* background-color: #2c3e50; */
   background-color: rgb(230, 230, 230);
   border: 1px solid rgb(68, 68, 68);
