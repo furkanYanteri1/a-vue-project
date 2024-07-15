@@ -59,7 +59,7 @@ export default {
 .custom-select-wrapper {
   position: relative;
   display: inline-block;
-  width: 200px;
+  min-width: 100px;
 }
 
 select {
