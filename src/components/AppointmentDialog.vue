@@ -123,7 +123,7 @@ export default {
     },
     handlePlannedDate() {
       this.date = this.appointmentDate.toLocaleDateString('en-US');
-      console.log('this.date', this.date); // Example output: 07/16/2024
+      console.log('this.date', this.date);
       this.showDatePicker = false;
     },
   },

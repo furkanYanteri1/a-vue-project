@@ -21,7 +21,7 @@ import { mapGetters } from 'vuex';
 import StatusFilter from './StatusFilter.vue';
 import DatePicker from "./DatePicker.vue";
 import SearchBar from "./SearchBar.vue";
-import AppointmentDialog from './AppointmentDialog.vue'; // Import the AppointmentDialog component
+import AppointmentDialog from './AppointmentDialog.vue';
 
 export default {
   name: "TopBar",
@@ -30,7 +30,7 @@ export default {
     StatusFilter,
     DatePicker,
     SearchBar,
-    AppointmentDialog, // Register the AppointmentDialog component
+    AppointmentDialog,
   },
   computed: {
     ...mapGetters(['agentFilter']),

@@ -48,7 +48,6 @@ import AppointmentStatus from "./AppointmentStatus.vue";
 import AgentAvatars from "./AgentAvatars.vue";
 import { mapGetters } from 'vuex'
 
-// Add all icons from the solid icons library
 library.add(fas);
 
 export default defineComponent({
@@ -69,7 +68,7 @@ export default defineComponent({
     };
   },
   computed: {
-    ...mapGetters(['agentColor']), // Ensure agentColor getter is mapped
+    ...mapGetters(['agentColor']),
   },
   methods: {
     getTimeDiff(appointmentDate) {
@@ -111,7 +110,7 @@ export default defineComponent({
       const date = new Date(dateStr);
 
       const day = String(date.getDate()).padStart(2, '0');
-      const month = String(date.getMonth() + 1).padStart(2, '0'); // Months are 0-indexed
+      const month = String(date.getMonth() + 1).padStart(2, '0');
       const year = date.getFullYear();
 
       const hours = String(date.getHours()).padStart(2, '0');
@@ -123,12 +122,10 @@ export default defineComponent({
       var infos = []
       this.record.fields?.agent_id.forEach((id,index) => {
         let pair={}
-        // pair.shortName = `${this.record.fields.agent_name[index][0]}`;
         pair.shortName = `${this.record.fields.agent_name[index][0]}${this.record.fields.agent_surname[index][0]}`;
         pair.color = this.agentColor(this.record.fields?.agent_id[index]|| '')
         infos.push(pair)
       });
-      // console.log('INFOS', infos);
       return infos
     }
   },

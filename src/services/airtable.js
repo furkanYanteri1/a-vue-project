@@ -45,7 +45,7 @@ export const createAppointment = (appointment) => {
           fields: {
             address: appointment.address,
             date: appointment.date,
-            agents: appointment.selectedAgents.map(agent => agent.id), // Assuming 'agents' is a linked record field
+            agents: appointment.selectedAgents.map(agent => agent.id),
           },
         },
       ],
