@@ -36,3 +36,28 @@ export const fetchAllRecords = (table) => {
       );
   });
 };
+
+export const createAppointment = (appointment) => {
+  return new Promise((resolve, reject) => {
+    base(CONSTANTS.AT_TN_APPOINTMENTS).create(
+      [
+        {
+          fields: {
+            address: appointment.address,
+            date: appointment.date,
+            agents: appointment.selectedAgents.map(agent => agent.id), // Assuming 'agents' is a linked record field
+          },
+        },
+      ],
+      (err, records) => {
+        if (err) {
+          console.error("Error creating appointment:", err);
+          reject(err);
+        } else {
+          console.log("Appointment created:", records[0]);
+          resolve(records[0]);
+        }
+      }
+    );
+  });
+};
