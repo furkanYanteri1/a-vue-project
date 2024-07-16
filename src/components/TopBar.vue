@@ -5,21 +5,23 @@
     <DatePicker />
     <SearchBar />
   </div>
-  <div class="pr-7 py-1">
+  <div class="py-1">
     <span class="appointments-count float-left mx-3">230 appointments found</span>
-      <v-btn class="float-right mr-10" color="pink">
-        <font-awesome-icon class="info-icon" :icon="['fas', 'plus-circle']" />
-        Create Appointment
-      </v-btn>
+    <v-btn class="float-right mr-8" color="#f01c84" @click="openDialog">
+      <font-awesome-icon class="info-icon" :icon="['fas', 'plus-circle']" />
+      Create Appointment
+    </v-btn>
+    <AppointmentDialog ref="appointmentDialog" />
   </div>
 </template>
 
 <script>
 import AgentAvatars from "./AgentAvatars.vue";
-import { mapGetters } from 'vuex'
-import StatusFilter from './StatusFilter.vue'
+import { mapGetters } from 'vuex';
+import StatusFilter from './StatusFilter.vue';
 import DatePicker from "./DatePicker.vue";
-import SearchBar from "./SearchBar.vue"; // Import your SearchBar component
+import SearchBar from "./SearchBar.vue";
+import AppointmentDialog from './AppointmentDialog.vue'; // Import the AppointmentDialog component
 
 export default {
   name: "TopBar",
@@ -27,10 +29,16 @@ export default {
     AgentAvatars,
     StatusFilter,
     DatePicker,
-    SearchBar, // Register the SearchBar component
+    SearchBar,
+    AppointmentDialog, // Register the AppointmentDialog component
   },
   computed: {
     ...mapGetters(['agentFilter']),
+  },
+  methods: {
+    openDialog() {
+      this.$refs.appointmentDialog.open();
+    },
   },
 };
 </script>
@@ -41,7 +49,6 @@ export default {
   justify-content: space-between;
   align-items: center;
   padding: 2px;
-  /* background-color: #2c3e50; */
   background-color: rgb(230, 230, 230);
   border: 1px solid rgb(68, 68, 68);
   color: white;

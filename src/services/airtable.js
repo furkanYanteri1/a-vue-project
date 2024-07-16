@@ -1,3 +1,4 @@
+import CONSTANTS from "@/constants";
 import Airtable from "airtable";
 
 const base = new Airtable({
@@ -5,7 +6,7 @@ const base = new Airtable({
 }).base(process.env.VUE_APP_AIRTABLE_BASE_ID);
 
 export const fetchAllRecords = (table) => {
-  console.log("Fetching records from Airtable...");
+  console.log("Fetching records from Airtable...", table);
   let allRecords = [];
 
   return new Promise((resolve, reject) => {
@@ -23,9 +24,13 @@ export const fetchAllRecords = (table) => {
             reject(err);
           } else {
             console.log(`Total records fetched: ${allRecords.length}`);
-            resolve(
-              allRecords.filter((rec) => rec.fields?.agent_id?.length > 0)
-            );
+            if (table === CONSTANTS.AT_TN_AGENTS) {
+              resolve(allRecords);
+            } else {
+              resolve(
+                allRecords.filter((rec) => rec.fields?.agent_id?.length > 0)
+              );
+            }
           }
         }
       );
