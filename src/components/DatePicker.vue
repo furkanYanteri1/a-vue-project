@@ -153,13 +153,14 @@
     display: flex;
     justify-content: center;
     margin: 20px 0;
+    width: 30%;
   }
   
   .custom-select-wrapper {
     position: relative;
     margin: 0 10px;
     display: inline-block;
-    width: 200px;
+    min-width: 110px;
   }
   
   select {

@@ -6,6 +6,7 @@ const store = createStore({
   state: {
     appointments: [],
     filteredAppointments: [],
+    agents: [],
     agentColorMap: {},
     agentFilter: [],
     activeStatus: "All Statuses",
@@ -18,14 +19,17 @@ const store = createStore({
       state.appointments = appointments;
       state.filteredAppointments = appointments;
     },
+    setAgents(state, agents) {
+      state.agents = agents;
+    },
     setAgentColorMap(state, agentColorMap) {
       state.agentColorMap = agentColorMap;
     },
     setAgentFilter(state, agentFilter) {
       state.agentFilter = agentFilter;
     },
-    filterAppointments(state){
-      state.filteredAppointments = [...state.appointments]
+    filterAppointments(state) {
+      state.filteredAppointments = [...state.appointments];
       //Filter by status
       switch (state.activeStatus) {
         case "Cancelled":
@@ -57,26 +61,28 @@ const store = createStore({
           );
       }
       // Filter by date
-      state.filteredAppointments = JSON.parse(JSON.stringify([...state.filteredAppointments])).filter((x) =>
-        isAppointmentWithinRange(
-          state.earliestDateFilter,
-          state.latestDateFilter,
-          x
-        ) === true
-      )
-
+      state.filteredAppointments = JSON.parse(
+        JSON.stringify([...state.filteredAppointments])
+      ).filter(
+        (x) =>
+          isAppointmentWithinRange(
+            state.earliestDateFilter,
+            state.latestDateFilter,
+            x
+          ) === true
+      );
     },
     changeStatus(state, status) {
       state.activeStatus = status;
-      this.commit('filterAppointments')
+      this.commit("filterAppointments");
     },
     setEarliestDate(state, earliestDate) {
       state.earliestDateFilter = earliestDate;
-      this.commit('filterAppointments')
+      this.commit("filterAppointments");
     },
     setLatestDate(state, latestDate) {
       state.latestDateFilter = latestDate;
-      this.commit('filterAppointments')
+      this.commit("filterAppointments");
     },
     increment(state) {
       state.count++;
@@ -85,8 +91,17 @@ const store = createStore({
   actions: {
     async fetchAppointments({ commit, getters }) {
       try {
+        const agentsData = await fetchAllRecords(CONSTANTS.AT_TN_AGENTS);
+        const agents = agentsData.map((agent) => {
+          return {
+            ...agent,
+            agent_name: `${agent.fields.agent_name} ${agent.fields.agent_surname}`,
+          };
+        });
+
         const records = await fetchAllRecords(CONSTANTS.AT_TN_APPOINTMENTS);
         commit("setAppointments", records);
+        commit("setAgents", agents);
 
         // Update agent color map after fetching appointments
         const agentColorMap = createAgentColorMap(records);
@@ -111,6 +126,9 @@ const store = createStore({
     },
     agentFilter: (state) => state.agentFilter,
     activeStatus: (state) => state.activeStatus,
+    agents: (state) => {
+      return state.agents;
+    },
   },
 });
 
@@ -235,6 +253,5 @@ function isAppointmentWithinRange(earliestDate, latestDate, appointment) {
 
   return true;
 }
-
 
 export default store;

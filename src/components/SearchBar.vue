@@ -46,6 +46,7 @@ export default {
   font-weight: bold;
   margin-right: 0px;
   margin-left: 20px;
+  min-width: 150px;
 }
 
 .search-bar input {

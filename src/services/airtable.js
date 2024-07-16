@@ -1,11 +1,15 @@
+import CONSTANTS from "@/constants";
 import Airtable from "airtable";
+
+console.log('API Key:', process.env.VUE_APP_AIRTABLE_API_KEY);
+console.log('Base ID:', process.env.VUE_APP_AIRTABLE_BASE_ID);
 
 const base = new Airtable({
   apiKey: process.env.VUE_APP_AIRTABLE_API_KEY,
 }).base(process.env.VUE_APP_AIRTABLE_BASE_ID);
 
 export const fetchAllRecords = (table) => {
-  console.log("Fetching records from Airtable...");
+  console.log("Fetching records from Airtable...", table);
   let allRecords = [];
 
   return new Promise((resolve, reject) => {
@@ -23,11 +27,40 @@ export const fetchAllRecords = (table) => {
             reject(err);
           } else {
             console.log(`Total records fetched: ${allRecords.length}`);
-            resolve(
-              allRecords.filter((rec) => rec.fields?.agent_id?.length > 0)
-            );
+            if (table === CONSTANTS.AT_TN_AGENTS) {
+              resolve(allRecords);
+            } else {
+              resolve(
+                allRecords.filter((rec) => rec.fields?.agent_id?.length > 0)
+              );
+            }
           }
         }
       );
+  });
+};
+
+export const createAppointment = (appointment) => {
+  return new Promise((resolve, reject) => {
+    base(CONSTANTS.AT_TN_APPOINTMENTS).create(
+      [
+        {
+          fields: {
+            appointment_address: appointment.address,
+            appointment_date: appointment.date,
+            agent_id: appointment.agents,
+          },
+        },
+      ],
+      (err, records) => {
+        if (err) {
+          console.error("Error creating appointment:", err);
+          reject(err);
+        } else {
+          console.log("Appointment created:", records[0]);
+          resolve(records[0]);
+        }
+      }
+    );
   });
 };
