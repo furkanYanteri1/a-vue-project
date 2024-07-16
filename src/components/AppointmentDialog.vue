@@ -55,7 +55,7 @@
           color="primary"
           text="Save"
           variant="tonal"
-          @click="createAppointment"
+          @click="submit"
         ></v-btn>
       </v-card-actions>
     </v-card>
@@ -104,8 +104,7 @@ export default {
     closeDatePicker() {
       this.showDatePicker = false;
     },
-    createAppointment() {
-      console.log('save');
+    submit() {
       const appObj = {
         address: this.address,
         date: this.date,
@@ -118,12 +117,12 @@ export default {
           this.close();
         })
         .catch((err) => {
+          alert('Error, please check the console')
           console.error("Error creating appointment:", err);
         });
     },
     handlePlannedDate() {
       this.date = this.appointmentDate.toLocaleDateString('en-US');
-      console.log('this.date', this.date);
       this.showDatePicker = false;
     },
   },

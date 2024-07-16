@@ -6,7 +6,7 @@
     <SearchBar />
   </div>
   <div class="py-1">
-    <span class="appointments-count float-left mx-3">230 appointments found</span>
+    <span class="appointments-count float-left mx-3">{{appointments.length}} appointments found</span>
     <v-btn class="float-right mr-8" color="#f01c84" @click="openDialog">
       <font-awesome-icon class="info-icon" :icon="['fas', 'plus-circle']" />
       Create Appointment
@@ -33,7 +33,7 @@ export default {
     AppointmentDialog,
   },
   computed: {
-    ...mapGetters(['agentFilter']),
+    ...mapGetters(['agentFilter', 'appointments']),
   },
   methods: {
     openDialog() {
@@ -52,5 +52,9 @@ export default {
   background-color: rgb(230, 230, 230);
   border: 1px solid rgb(68, 68, 68);
   color: white;
+}
+.appointments-count{
+  font-size: 12px;
+  color: rgb(77, 77, 77);
 }
 </style>

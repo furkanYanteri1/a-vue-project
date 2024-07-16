@@ -21,7 +21,6 @@ const store = createStore({
     },
     setAgents(state, agents) {
       state.agents = agents;
-      console.log("state.agents", state.agents);
     },
     setAgentColorMap(state, agentColorMap) {
       state.agentColorMap = agentColorMap;
@@ -128,7 +127,6 @@ const store = createStore({
     agentFilter: (state) => state.agentFilter,
     activeStatus: (state) => state.activeStatus,
     agents: (state) => {
-      console.log("999", JSON.parse(JSON.stringify(state.agents)));
       return state.agents;
     },
   },

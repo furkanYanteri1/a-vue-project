@@ -1,6 +1,9 @@
 import CONSTANTS from "@/constants";
 import Airtable from "airtable";
 
+console.log('API Key:', process.env.VUE_APP_AIRTABLE_API_KEY);
+console.log('Base ID:', process.env.VUE_APP_AIRTABLE_BASE_ID);
+
 const base = new Airtable({
   apiKey: process.env.VUE_APP_AIRTABLE_API_KEY,
 }).base(process.env.VUE_APP_AIRTABLE_BASE_ID);
@@ -43,9 +46,9 @@ export const createAppointment = (appointment) => {
       [
         {
           fields: {
-            address: appointment.address,
-            date: appointment.date,
-            agents: appointment.selectedAgents.map(agent => agent.id),
+            appointment_address: appointment.address,
+            appointment_date: appointment.date,
+            agent_id: appointment.agents,
           },
         },
       ],
