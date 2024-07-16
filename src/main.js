@@ -11,11 +11,12 @@ import {
     faEnvelope,
     faPhoneAlt,
     faClock,
+    faPlusCircle,
     faCalendarAlt // Add the calendar icon
 } from '@fortawesome/free-solid-svg-icons' // Use free-solid-svg-icons for solid icons
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 
-library.add(faHome, faUser, faEnvelope, faPhoneAlt, faClock, faCalendarAlt) // Ensure calendar icon is added
+library.add(faHome, faUser, faEnvelope, faPhoneAlt, faClock, faPlusCircle, faCalendarAlt) // Ensure calendar icon is added
 
 const app = createApp(App)
 

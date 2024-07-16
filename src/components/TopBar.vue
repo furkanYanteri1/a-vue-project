@@ -5,6 +5,13 @@
     <DatePicker />
     <SearchBar />
   </div>
+  <div class="pr-7 py-1">
+    <span class="appointments-count float-left mx-3">230 appointments found</span>
+      <v-btn class="float-right mr-10" color="pink">
+        <font-awesome-icon class="info-icon" :icon="['fas', 'plus-circle']" />
+        Create Appointment
+      </v-btn>
+  </div>
 </template>
 
 <script>
